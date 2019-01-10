@@ -1,3 +1,7 @@
+import os, sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 from kinect import CameraStream
 import cv2
 

@@ -11,9 +11,7 @@ class CameraStream:
         self.ip = ip
         self.port = port
         self.packet_size = packet_size
-
-    def __del__(self):
-        self.close()
+        self.is_open = False
     
     def __iter__(self):
         def iterator():
@@ -39,6 +37,7 @@ class CameraStream:
         self.stream.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             self.stream.connect((self.ip, self.port))
+            self.is_open = True
         except socket.error as err:
             print("Connection error. Possible issues:")
             print("- Wrong ip")
@@ -49,31 +48,35 @@ class CameraStream:
     def close(self):
         print('closing video stream')
         self.stream.close()
+        self.is_open = False
 
     def get_next_frame(self):
-        data = b''
-        while True:
-            try:
-                r = self.stream.recv(self.packet_size)
-                if len(r) == 0:
-                    continue
-                a = r.find(b'END!')
-                if a != -1:
-                    data += r[:a]
-                    break
-                data += r
-            except socket.error as e:
-                raise e
-            except Exception:
-                pass
+        if self.is_open:
+            data = b''
+            while True:
+                try:
+                    r = self.stream.recv(self.packet_size)
+                    if len(r) == 0:
+                        continue
+                    a = r.find(b'END!')
+                    if a != -1:
+                        data += r[:a]
+                        break
+                    data += r
+                except socket.error as e:
+                    raise e
+                except Exception:
+                    pass
 
-        nparr = np.fromstring(data, np.uint8)
-        
-        if nparr.shape[0] == 0:
-            return None
+            nparr = np.fromstring(data, np.uint8)
+            
+            if nparr.shape[0] == 0:
+                return None
+            else:
+                frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+                return frame
         else:
-            frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-            return frame
+            raise Exception('Stream not open. use `open()` before fetching next frame. Or use `with .running()`')
         
     @contextmanager
     def running(self):
