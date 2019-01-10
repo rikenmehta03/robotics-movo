@@ -1,4 +1,4 @@
-from kinnect import CameraStream
+from kinect import CameraStream
 import cv2
 
 stream = CameraStream('10.66.171.1', 50505)
