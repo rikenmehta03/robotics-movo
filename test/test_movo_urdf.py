@@ -8,7 +8,7 @@ p.setGravity(0,0,-10)
 planeId = p.loadURDF("plane.urdf")
 cubeStartPos = [0,0,1]
 cubeStartOrientation = p.getQuaternionFromEuler([0,0,0])
-movoId = p.loadURDF("movo_description/movo.urdf",cubeStartPos, cubeStartOrientation)
+movoId = p.loadURDF("../movo_urdf/movo.urdf",cubeStartPos, cubeStartOrientation)
 
 for i in range (10000):
     p.stepSimulation()
