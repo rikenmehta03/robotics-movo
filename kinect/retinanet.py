@@ -12,7 +12,7 @@ def _get_weights_path():
     return os.path.join(home_dir, 'resnet50_coco_best_v2.1.0.h5')
 
 
-def labels_to_name(label):
+def labels_to_names(label):
     return labels_to_names_dict[label]
 
 

@@ -21,16 +21,20 @@ def signal_handler(signal=None, frame=None):
     exit(0)
 
 def capture(server_socket):
+    count = 0
     with device.running():
         for type_, frame in device:
             if type_ is FrameType.Color:
-                try:
-                    data = cv2.imencode('.jpg', frame.to_array())[1].tostring()
-                    send(server_socket,data)
-                except KeyboardInterrupt:
-                    signal_handler()
-                except socket.error:
-                    return
+                count += 1
+                if count % 5 == 0:
+                    count = 0
+                    try:
+                        data = cv2.imencode('.jpg', frame.to_array())[1].tostring()
+                        send(server_socket,data)
+                    except KeyboardInterrupt:
+                        signal_handler()
+                    except socket.error:
+                        return
 
 def send(c, data):
     try:

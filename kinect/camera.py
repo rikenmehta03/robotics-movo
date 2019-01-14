@@ -7,11 +7,12 @@ import errno
 from contextlib import contextmanager
 
 class CameraStream:
-    def __init__(self, ip, port, packet_size=8192):
+    def __init__(self, ip, port, packet_size=8192, verbose=True):
         self.ip = ip
         self.port = port
         self.packet_size = packet_size
         self.is_open = False
+        self.verbose = verbose
     
     def __iter__(self):
         def iterator():
@@ -21,7 +22,8 @@ class CameraStream:
                 try:
                     frame = self.get_next_frame()
                     if (time.time() - start_time) > 1:
-                        print("FPS: {}".format(counter))
+                        if self.verbose:
+                            print("FPS: {}".format(counter))
                         counter = 0
                         start_time = time.time()
                     if frame is not None:
@@ -74,6 +76,7 @@ class CameraStream:
                 return None
             else:
                 frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+                frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)
                 return frame
         else:
             raise Exception('Stream not open. use `open()` before fetching next frame. Or use `with .running()`')
