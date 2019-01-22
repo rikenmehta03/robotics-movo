@@ -110,3 +110,4 @@ data/
 .csv
 .log
 logs/
+*.pkl
