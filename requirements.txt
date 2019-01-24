@@ -1,0 +1,5 @@
+opencv-python==4.0.0.21
+pybullet==2.4.1
+gym==0.10.9
+tensorflow==1.12.0
+redis
