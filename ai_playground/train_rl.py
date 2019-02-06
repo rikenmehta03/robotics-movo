@@ -66,6 +66,7 @@ def parse_args():
     parser.add_argument('--policy_freq', default=2, type=int)
     parser.add_argument('--log_format', default='text', type=str)
     parser.add_argument('--save_model_dir', default=None, type=str)
+    parser.add_argument('--render', default=1, type=int)
     args = parser.parse_args()
     return args
 
@@ -74,6 +75,9 @@ def main():
     args = parse_args()
 
     env = gym.make(args.env_name)
+
+    if args.env_name == 'movobot-v0':
+        env.init(render=(args.render>0))
 
     # Set seeds
     env.seed(args.seed)
