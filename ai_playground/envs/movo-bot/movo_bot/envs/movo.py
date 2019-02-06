@@ -1,0 +1,60 @@
+import os
+from collections import OrderedDict, namedtuple
+import pybullet as p
+import numpy as np
+
+JointInfo = namedtuple('JointInfo', ['jointIndex', 'jointName', 'jointType',
+                                     'qIndex', 'uIndex', 'flags',
+                                     'jointDamping', 'jointFriction', 'jointLowerLimit', 'jointUpperLimit',
+                                     'jointMaxForce', 'jointMaxVelocity', 'linkName', 'jointAxis',
+                                     'parentFramePos', 'parentFrameOrn', 'parentIndex'])
+
+def clamp(n, minn, maxn):
+    return max(min(maxn, n), minn)
+
+class Movo():
+    def __init__(self, arm='right'):
+        self.movoEndEffectorIndex = 23
+        self.reset()
+
+    def _join(self, params):
+        return '_'.join(params)
+
+    def _set_joint_max_position(self, joint_name):
+        p.setJointMotorControl2(self.movoId, self.jointsInfo[joint_name].jointIndex, controlMode=p.POSITION_CONTROL,
+                                targetPosition=self.jointsInfo[joint_name].jointUpperLimit, targetVelocity=0)
+
+    def _set_joint_position(self, joint_name, position):
+        p.setJointMotorControl2(self.movoId, self.jointsInfo[joint_name].jointIndex, controlMode=p.POSITION_CONTROL,
+                                targetPosition=position, targetVelocity=0)
+
+    def reset(self):
+        self.movoId = p.loadURDF(os.path.join(os.path.dirname(
+            __file__), 'movo_urdf', 'movo.urdf'), useFixedBase=True)
+        p.resetBasePositionAndOrientation(
+            self.movoId, [-0.100000, 0.000000, 0.000000], [0.000000, 0.000000, 0.000000, 1.000000])
+        self.numJoints = p.getNumJoints(self.movoId)
+        self.jointsInfo = OrderedDict()
+        for jId in range(self.numJoints):
+            joint = p.getJointInfo(self.movoId, jId)
+            self.jointsInfo[joint[1].decode('ascii')] = JointInfo(*joint)
+        self.endEffectorPosition = list(p.getLinkState(self.movoId, self.movoEndEffectorIndex)[0])
+        p.resetJointState(self.movoId, self.jointsInfo['linear_joint'].jointIndex, self.jointsInfo['linear_joint'].jointUpperLimit)
+
+    def step(self, action):
+        if action is not None:
+            dx = action[0]
+            dy = action[1]
+            dz = action[2]
+
+            self.endEffectorPosition[0] = clamp(self.endEffectorPosition[0] + dx, 0.3, 0.7)
+            self.endEffectorPosition[1] = clamp(self.endEffectorPosition[1] + dy, -0.1, 0.3)
+            self.endEffectorPosition[2] = clamp(self.endEffectorPosition[2] + dz, 0.63, 0.8)
+
+            jointPositions = p.calculateInverseKinematics(self.movoId, self.movoEndEffectorIndex, self.endEffectorPosition)
+            jointsInfo = list(self.jointsInfo.values())
+            c = 0
+            for i in range(self.numJoints):
+                if jointsInfo[i].jointType != 4:
+                    p.setJointMotorControl2(self.movoId, i, controlMode=p.POSITION_CONTROL, targetPosition=jointPositions[c], targetVelocity=0)
+                    c+=1

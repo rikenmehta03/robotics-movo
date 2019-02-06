@@ -1,0 +1,296 @@
+{
+    "base_chassis_joint": {
+        "jointIndex": 0,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "linear_actuator_fixed_joint": {
+        "jointIndex": 1,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "linear_joint": {
+        "jointIndex": 2,
+        "jointType": 1,
+        "qIndex": 7,
+        "uIndex": 6
+    },
+    "pan_base_joint": {
+        "jointIndex": 3,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "pan_joint": {
+        "jointIndex": 4,
+        "jointType": 0,
+        "qIndex": 8,
+        "uIndex": 7
+    },
+    "tilt_joint": {
+        "jointIndex": 5,
+        "jointType": 0,
+        "qIndex": 9,
+        "uIndex": 8
+    },
+    "kinect2_joint": {
+        "jointIndex": 6,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "kinect2_ir_joint": {
+        "jointIndex": 7,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "kinect2_ir_optical_frame_joint": {
+        "jointIndex": 8,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "kinect2_rgb_joint": {
+        "jointIndex": 9,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "kinect2_rgb_optical_joint": {
+        "jointIndex": 10,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "upper_body_joint": {
+        "jointIndex": 11,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "right_kinova_joint": {
+        "jointIndex": 12,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "right_shoulder_pan_joint": {
+        "jointIndex": 13,
+        "jointType": 0,
+        "qIndex": 10,
+        "uIndex": 9
+    },
+    "right_shoulder_lift_joint": {
+        "jointIndex": 14,
+        "jointType": 0,
+        "qIndex": 11,
+        "uIndex": 10
+    },
+    "right_arm_half_joint": {
+        "jointIndex": 15,
+        "jointType": 0,
+        "qIndex": 12,
+        "uIndex": 11
+    },
+    "right_elbow_joint": {
+        "jointIndex": 16,
+        "jointType": 0,
+        "qIndex": 13,
+        "uIndex": 12
+    },
+    "right_wrist_spherical_1_joint": {
+        "jointIndex": 17,
+        "jointType": 0,
+        "qIndex": 14,
+        "uIndex": 13
+    },
+    "right_wrist_spherical_2_joint": {
+        "jointIndex": 18,
+        "jointType": 0,
+        "qIndex": 15,
+        "uIndex": 14
+    },
+    "right_wrist_3_joint": {
+        "jointIndex": 19,
+        "jointType": 0,
+        "qIndex": 16,
+        "uIndex": 15
+    },
+    "right_ee_fixed_joint": {
+        "jointIndex": 20,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "right_gripper_base_joint": {
+        "jointIndex": 21,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "right_gripper_finger1_joint": {
+        "jointIndex": 22,
+        "jointType": 0,
+        "qIndex": 17,
+        "uIndex": 16
+    },
+    "right_gripper_finger1_finger_tip_joint": {
+        "jointIndex": 23,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "right_gripper_finger2_joint": {
+        "jointIndex": 24,
+        "jointType": 0,
+        "qIndex": 18,
+        "uIndex": 17
+    },
+    "right_gripper_finger2_finger_tip_joint": {
+        "jointIndex": 25,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "right_gripper_finger3_joint": {
+        "jointIndex": 26,
+        "jointType": 0,
+        "qIndex": 19,
+        "uIndex": 18
+    },
+    "right_gripper_finger3_finger_tip_joint": {
+        "jointIndex": 27,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "left_kinova_joint": {
+        "jointIndex": 28,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "left_shoulder_pan_joint": {
+        "jointIndex": 29,
+        "jointType": 0,
+        "qIndex": 20,
+        "uIndex": 19
+    },
+    "left_shoulder_lift_joint": {
+        "jointIndex": 30,
+        "jointType": 0,
+        "qIndex": 21,
+        "uIndex": 20
+    },
+    "left_arm_half_joint": {
+        "jointIndex": 31,
+        "jointType": 0,
+        "qIndex": 22,
+        "uIndex": 21
+    },
+    "left_elbow_joint": {
+        "jointIndex": 32,
+        "jointType": 0,
+        "qIndex": 23,
+        "uIndex": 22
+    },
+    "left_wrist_spherical_1_joint": {
+        "jointIndex": 33,
+        "jointType": 0,
+        "qIndex": 24,
+        "uIndex": 23
+    },
+    "left_wrist_spherical_2_joint": {
+        "jointIndex": 34,
+        "jointType": 0,
+        "qIndex": 25,
+        "uIndex": 24
+    },
+    "left_wrist_3_joint": {
+        "jointIndex": 35,
+        "jointType": 0,
+        "qIndex": 26,
+        "uIndex": 25
+    },
+    "left_ee_fixed_joint": {
+        "jointIndex": 36,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "left_gripper_base_joint": {
+        "jointIndex": 37,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "left_gripper_finger1_joint": {
+        "jointIndex": 38,
+        "jointType": 0,
+        "qIndex": 27,
+        "uIndex": 26
+    },
+    "left_gripper_finger1_finger_tip_joint": {
+        "jointIndex": 39,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "left_gripper_finger2_joint": {
+        "jointIndex": 40,
+        "jointType": 0,
+        "qIndex": 28,
+        "uIndex": 27
+    },
+    "left_gripper_finger2_finger_tip_joint": {
+        "jointIndex": 41,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "left_gripper_finger3_joint": {
+        "jointIndex": 42,
+        "jointType": 0,
+        "qIndex": 29,
+        "uIndex": 28
+    },
+    "left_gripper_finger3_finger_tip_joint": {
+        "jointIndex": 43,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "sic_imu_joint": {
+        "jointIndex": 44,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "front_laser_joint": {
+        "jointIndex": 45,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "rear_laser_joint": {
+        "jointIndex": 46,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "lower_body_joint": {
+        "jointIndex": 47,
+        "jointType": 4,
+        "qIndex": -1,
+        "uIndex": -1
+    },
+    "mid_body_joint": {
+        "jointIndex": 48,
+        "jointType": 1,
+        "qIndex": 30,
+        "uIndex": 29
+    }
+}
