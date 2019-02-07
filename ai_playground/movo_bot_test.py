@@ -6,7 +6,7 @@ from stable_baselines import PPO2
 
 
 env = gym.make("movobot-v0")
-env.init()
+env.init(render=False)
 # env = DummyVecEnv([lambda: env])
 
 # model = PPO2(CnnPolicy, env, verbose=1)
@@ -15,4 +15,5 @@ env.init()
 
 # model.save("movo.pkl")
 state = env.reset()
+print(state.shape)
 
