@@ -52,10 +52,10 @@ class MovobotEnv(gym.Env):
         action_dim = 3
         self._action_bound = 1
         action_high = np.array([self._action_bound] * action_dim)
-        self.action_space = spaces.Box(-action_high, action_high)
+        self.action_space = spaces.Box(-1 * action_high, action_high)
 
         self.observation_space = spaces.Box(
-            low=0, high=255, shape=(self._height, self._width, 4))
+            low=0, high=255, shape=(self._height*self._width*3, 1))
         self._seed()
         self._p.setTimeStep(self._timeStep)
 
@@ -136,7 +136,8 @@ class MovobotEnv(gym.Env):
         img_arr = p.getCameraImage(
             width=self._width, height=self._height, viewMatrix=self._view_mat, projectionMatrix=self._proj_mat)
         rgb = img_arr[2]
-        np_img_arr = np.reshape(rgb, (self._height, self._width, 4))
+        np_img_arr = np.reshape(rgb, (self._height, self._width, 4))[:, :, 0:3]
+        np_img_arr = np.reshape(np_img_arr, (self._height*self._width*3, 1))
         self._observation = np_img_arr
         return self._observation
 

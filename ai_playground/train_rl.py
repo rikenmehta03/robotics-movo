@@ -19,13 +19,6 @@ from td3 import TD3
 def create_policy(policy_name, device, state_dim, action_dim, max_action):
     if policy_name == 'TD3':
         return TD3(device, state_dim, action_dim, max_action)
-    # elif policy_name == 'SAC':
-    #     return SAC(device, state_dim, action_dim, max_action)
-    # TODO: test other policies
-    # elif args.policy_name == 'OurDDPG':
-    #    train_policy = OurDDPG.DDPG(state_dim, action_dim, max_action)
-    # elif args.policy_name == 'DDPG':
-    #    train_policy = DDPG.DDPG(state_dim, action_dim, max_action)
     assert 'Unknown policy: %s' % policy_name
 
 
@@ -58,7 +51,7 @@ def parse_args():
     parser.add_argument('--eval_freq', default=5e3, type=int)
     parser.add_argument('--max_timesteps', default=1e6, type=int)
     parser.add_argument('--expl_noise', default=0.1, type=float)
-    parser.add_argument('--batch_size', default=100, type=int)
+    parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--discount', default=0.99, type=float)
     parser.add_argument('--tau', default=0.005, type=float)
     parser.add_argument('--policy_noise', default=0.2, type=float)
@@ -91,8 +84,10 @@ def main():
     # Create replay buffers
     replay_buffer = data.ReplayBuffer()
 
+    # pylint: disable=E1101
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
+    # pylint: enable=E1101
+    
     # Initialize policy
     train_policy = create_policy(
         args.policy_name, device, state_dim, action_dim, max_action)
