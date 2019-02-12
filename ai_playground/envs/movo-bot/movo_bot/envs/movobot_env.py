@@ -14,8 +14,6 @@ from pkg_resources import parse_version
 
 from . import movo
 
-maxSteps = 128
-
 
 class MovobotEnv(gym.Env):
     metadata = {
@@ -59,7 +57,6 @@ class MovobotEnv(gym.Env):
         self._seed()
         self._p.setTimeStep(self._timeStep)
 
-    def _reset(self):
         self._p.resetSimulation()
         self._p.setPhysicsEngineParameter(numSolverIterations=150)
         self._p.setTimeStep(self._timeStep)
@@ -67,6 +64,11 @@ class MovobotEnv(gym.Env):
         self._p.setGravity(0, 0, -10)
         self.tableId = self._p.loadURDF(
             "table/table.urdf", [1.000000, 0.00000, 0.000000], [0.000000, 0.000000, 0.0, 1.0])
+
+        self._movo = None
+        self.blockUid = None
+
+    def _reset(self):
         self._envStepCounter = 0
         self.terminated = 0
 
@@ -74,10 +76,18 @@ class MovobotEnv(gym.Env):
         ypos = 0 + 0.25*random.random()
         ang = 3.1415925438*random.random()
         orn = self._p.getQuaternionFromEuler([0, 0, ang])
-        self.blockUid = self._p.loadURDF(
-            "block.urdf", [xpos, ypos, 0.63], orn)
+        pos = [xpos, ypos, 0.63]
+        if self.blockUid is None:
+            self.blockUid = self._p.loadURDF(
+                "block.urdf", pos, orn)
+        else:
+            self._p.resetBasePositionAndOrientation(self.blockUid, pos, orn)
 
-        self._movo = movo.Movo()
+        if self._movo is None:
+            self._movo = movo.Movo()
+        else:
+            self._movo.reset()
+        self._p.stepSimulation() 
         self.getExtendedObservation()
         return self._observation
 
@@ -99,7 +109,7 @@ class MovobotEnv(gym.Env):
 
     def _step(self, action=None):
         self._movo.step([action[0], action[1], action[2]])
-        p.stepSimulation()
+        self._p.stepSimulation()
         self._envStepCounter += 1
         reward = self._reward()
         done = self._termination()
@@ -110,17 +120,30 @@ class MovobotEnv(gym.Env):
         pass
 
     def _reward(self):
-        blockPos = np.array(
-            self._p.getBasePositionAndOrientation(self.blockUid)[0])
-        reachPosition = np.array(self._p.getLinkState(
-            self._movo.movoId, self._movo.movoEndEffectorIndex)[0])
+        # blockPos = np.array(
+        #     self._p.getBasePositionAndOrientation(self.blockUid)[0])
+        # reachPosition = np.array(self._p.getLinkState(
+        #     self._movo.movoId, self._movo.movoEndEffectorIndex)[0])
 
-        reward = -100.0 * np.linalg.norm(blockPos-reachPosition)
+        # reward = -100.0 * np.linalg.norm(blockPos-reachPosition)
+
+        tableContactPoints = self._p.getContactPoints(
+            self.tableId, self._movo.movoId)
+        blockContactPoints = self._p.getContactPoints(
+            self.blockUid, self._movo.movoId)
+
+        if (len(tableContactPoints)):
+            reward = -1.0
+        elif (len(blockContactPoints)):
+            reward = 1.0
+        else:
+            reward = 0.0
+
         return reward
 
     def _termination(self):
-        if (self.terminated or self._envStepCounter > maxSteps):
-            self._observation = self.getExtendedObservation()
+        if (self.terminated or self._envStepCounter > self._max_episode_steps):
+            self.getExtendedObservation()
             return True
 
         tableContactPoints = self._p.getContactPoints(
