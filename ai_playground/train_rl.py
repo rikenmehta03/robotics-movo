@@ -103,7 +103,8 @@ def main():
     episode_num = 0
     episode_reward = 0
     episode_timesteps = 0
-    done = True
+    done = False
+    state = env.reset()
 
     while total_timesteps < args.max_timesteps:
         if done:
@@ -127,7 +128,7 @@ def main():
                 tracker.reset('train_episode_timesteps')
                 if args.save_model_dir is not None:
                     train_policy.save(args.save_model_dir)
-
+            print("episode_reward : {}".format(episode_reward))
             tracker.update('train_episode_reward', episode_reward)
             tracker.update('train_episode_timesteps', episode_timesteps)
             # Reset environment
