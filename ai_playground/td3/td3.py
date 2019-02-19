@@ -98,8 +98,11 @@ class TD3(object):
         torch.save(self.critic.state_dict(), '%s/critic.pt' % directory)
 
     def load(self, directory):
-        self.actor.load_state_dict(torch.load('%s/actor.pt' % directory))
-        self.critic.load_state_dict(torch.load('%s/critic.pt' % directory))
+        map_location = 'cuda' if torch.cuda.is_available() else 'cpu'
+        self.actor.load_state_dict(torch.load(
+            '%s/actor.pt' % directory, map_location=map_location))
+        self.critic.load_state_dict(torch.load(
+            '%s/critic.pt' % directory, map_location=map_location))
 
     def select_action(self, state):
         state = torch.FloatTensor(state.reshape(1, -1)).to(self.device)

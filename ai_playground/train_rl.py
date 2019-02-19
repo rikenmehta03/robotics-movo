@@ -60,6 +60,8 @@ def parse_args():
     parser.add_argument('--log_format', default='text', type=str)
     parser.add_argument('--save_model_dir', default=None, type=str)
     parser.add_argument('--render', default=1, type=int)
+    parser.add_argument('--eval', default='false', type=str)
+    parser.add_argument('--model_dir', default='models', type=str)
     args = parser.parse_args()
     return args
 
@@ -106,71 +108,77 @@ def main():
     done = False
     state = env.reset()
 
-    while total_timesteps < args.max_timesteps:
-        if done:
-            if total_timesteps != 0:
-                train_logger.dump(tracker)
-                if args.policy_name == 'TD3':
-                    train_policy.run(replay_buffer, episode_timesteps, tracker,
-                                     args.batch_size, args.discount, args.tau,
-                                     args.policy_noise, args.noise_clip,
-                                     args.policy_freq)
-                # else:
-                #     train_policy.train(replay_buffer, episode_timesteps,
-                #                        args.batch_size, args.discount, args.tau)
+    
+    if args.eval == 'true':
+        train_policy.load(args.model_dir)
+        print('Entering evaluation mode')
+    else:
+        while total_timesteps < args.max_timesteps:
+            if done:
+                if total_timesteps != 0:
+                    train_logger.dump(tracker)
+                    if args.policy_name == 'TD3':
+                        train_policy.run(replay_buffer, episode_timesteps, tracker,
+                                        args.batch_size, args.discount, args.tau,
+                                        args.policy_noise, args.noise_clip,
+                                        args.policy_freq)
+                    # else:
+                    #     train_policy.train(replay_buffer, episode_timesteps,
+                    #                        args.batch_size, args.discount, args.tau)
 
-            # Evaluate episode
-            if timesteps_since_eval >= args.eval_freq:
-                timesteps_since_eval %= args.eval_freq
-                evaluate_policy(env, train_policy, tracker)
-                eval_logger.dump(tracker)
-                tracker.reset('train_episode_reward')
-                tracker.reset('train_episode_timesteps')
-                if args.save_model_dir is not None:
-                    train_policy.save(args.save_model_dir)
-            print("episode_reward : {}".format(episode_reward))
-            tracker.update('train_episode_reward', episode_reward)
-            tracker.update('train_episode_timesteps', episode_timesteps)
-            # Reset environment
-            state = env.reset()
-            done = False
-            episode_reward = 0
-            episode_timesteps = 0
-            episode_num += 1
+                # Evaluate episode
+                if timesteps_since_eval >= args.eval_freq:
+                    timesteps_since_eval %= args.eval_freq
+                    evaluate_policy(env, train_policy, tracker)
+                    eval_logger.dump(tracker)
+                    tracker.reset('train_episode_reward')
+                    tracker.reset('train_episode_timesteps')
+                    if args.save_model_dir is not None:
+                        train_policy.save(args.save_model_dir)
+                print("episode_reward : {}".format(episode_reward))
+                tracker.update('train_episode_reward', episode_reward)
+                tracker.update('train_episode_timesteps', episode_timesteps)
+                # Reset environment
+                state = env.reset()
+                done = False
+                episode_reward = 0
+                episode_timesteps = 0
+                episode_num += 1
 
-            tracker.update('num_episodes')
-            tracker.reset('episode_timesteps')
+                tracker.update('num_episodes')
+                tracker.reset('episode_timesteps')
 
-        # Select action randomly or according to policy
-        if total_timesteps < args.start_timesteps:
-            action = env.action_space.sample()
-        else:
-            with torch.no_grad():
-                with utils.eval_mode(train_policy):
-                    action = train_policy.select_action(np.array(state))
-            if args.expl_noise != 0:
-                action = (action + np.random.normal(
-                    0, args.expl_noise, size=env.action_space.shape[0])).clip(
-                        env.action_space.low, env.action_space.high)
+            # Select action randomly or according to policy
+            if total_timesteps < args.start_timesteps:
+                action = env.action_space.sample()
+            else:
+                with torch.no_grad():
+                    with utils.eval_mode(train_policy):
+                        action = train_policy.select_action(np.array(state))
+                if args.expl_noise != 0:
+                    action = (action + np.random.normal(
+                        0, args.expl_noise, size=env.action_space.shape[0])).clip(
+                            env.action_space.low, env.action_space.high)
 
-        # Perform action
-        new_state, reward, done, _ = env.step(action)
-        done_float = 0 if episode_timesteps + \
-            1 == env._max_episode_steps else float(done)
-        episode_reward += reward
+            # Perform action
+            new_state, reward, done, _ = env.step(action)
+            done_float = 0 if episode_timesteps + \
+                1 == env._max_episode_steps else float(done)
+            episode_reward += reward
 
-        # Store data in replay buffer
-        replay_buffer.add((state, new_state, action, reward, done_float))
+            # Store data in replay buffer
+            replay_buffer.add((state, new_state, action, reward, done_float))
 
-        state = new_state
+            state = new_state
 
-        episode_timesteps += 1
-        total_timesteps += 1
-        timesteps_since_eval += 1
-        tracker.update('total_timesteps')
-        tracker.update('episode_timesteps')
+            episode_timesteps += 1
+            total_timesteps += 1
+            timesteps_since_eval += 1
+            tracker.update('total_timesteps')
+            tracker.update('episode_timesteps')
 
     # Final evaluation
+    
     evaluate_policy(env, train_policy, tracker)
     eval_logger.dump(tracker)
     if args.save_model_dir is not None:
