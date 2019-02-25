@@ -24,11 +24,11 @@ class MovobotEnv(gym.Env):
     def __init__(self):
         pass
 
-    def init(self, render=True, isDiscrete=True):
+    def init(self, render=True, discrete_reward=True):
         self._timeStep = 1./240.
         self._observation = []
         self._renders = render
-        self._isDiscrete = isDiscrete
+        self.discrete_reward = discrete_reward
         self._envStepCounter = 0
         self._max_episode_steps = 128
         self._p = p
@@ -120,13 +120,18 @@ class MovobotEnv(gym.Env):
         pass
 
     def _reward(self):
-        if not self._isDiscrete:
-            blockPos = np.array(
+        if not self.discrete_reward:
+            table_contact_points = self._p.getContactPoints(
+                self.tableId, self._movo.movoId)
+            # if hit the table 
+            if (len(table_contact_points) > 0):
+                return -1000
+            block_pos = np.array(
                 self._p.getBasePositionAndOrientation(self.blockUid)[0])
-            reachPosition = np.array(self._p.getLinkState(
+            reach_position = np.array(self._p.getLinkState(
                 self._movo.movoId, self._movo.movoEndEffectorIndex)[0])
 
-            reward = -100.0 * np.linalg.norm(blockPos-reachPosition)
+            reward = -np.linalg.norm(block_pos - reach_position)
         else:
             tableContactPoints = self._p.getContactPoints(
                 self.tableId, self._movo.movoId)

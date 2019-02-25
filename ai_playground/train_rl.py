@@ -47,7 +47,7 @@ def parse_args():
     parser.add_argument('--policy_name', default='TD3')  # Policy name
     parser.add_argument('--env_name', default='movobot-v0')
     parser.add_argument('--seed', default=0, type=int)
-    parser.add_argument('--start_timesteps', default=1e4, type=int)
+    parser.add_argument('--start_timesteps', default=100, type=int)
     parser.add_argument('--eval_freq', default=5e3, type=int)
     parser.add_argument('--max_timesteps', default=1e6, type=int)
     parser.add_argument('--expl_noise', default=0.1, type=float)
@@ -59,8 +59,9 @@ def parse_args():
     parser.add_argument('--policy_freq', default=2, type=int)
     parser.add_argument('--log_format', default='text', type=str)
     parser.add_argument('--save_model_dir', default=None, type=str)
-    parser.add_argument('--render', default=1, type=int)
+    parser.add_argument('--render', default=False, action='store_true')
     parser.add_argument('--eval', default='false', type=str)
+    parser.add_argument('--discrete_reward', default=False, action='store_true')
     parser.add_argument('--model_dir', default='models', type=str)
     args = parser.parse_args()
     return args
@@ -72,7 +73,7 @@ def main():
     env = gym.make(args.env_name)
 
     if args.env_name == 'movobot-v0':
-        env.init(render=(args.render>0))
+        env.init(render=args.render, discrete_reward=args.discrete_reward)
 
     # Set seeds
     env.seed(args.seed)

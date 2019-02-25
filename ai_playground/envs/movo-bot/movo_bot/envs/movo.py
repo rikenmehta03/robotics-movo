@@ -9,11 +9,6 @@ JointInfo = namedtuple('JointInfo', ['jointIndex', 'jointName', 'jointType',
                                      'jointMaxForce', 'jointMaxVelocity', 'linkName', 'jointAxis',
                                      'parentFramePos', 'parentFrameOrn', 'parentIndex'])
 
-
-def clamp(n, minn, maxn):
-    return max(min(maxn, n), minn)
-
-
 class Movo():
     def __init__(self, arm='right'):
         self.movoEndEffectorIndex = 23
@@ -34,9 +29,7 @@ class Movo():
             self.movoId, self.jointsInfo['linear_joint'].jointIndex, self.jointsInfo['linear_joint'].jointUpperLimit)
 
         self.resetState = p.getJointStates(self.movoId, range(self.numJoints))
-        
-        self.endEffectorPosition = list(p.getLinkState(
-            self.movoId, self.movoEndEffectorIndex)[0])
+    
 
     def _join(self, params):
         return '_'.join(params)
@@ -75,20 +68,13 @@ class Movo():
         for i, _s in enumerate(self.resetState):
             p.resetJointState(self.movoId, i, _s[0])
 
-        self.endEffectorPosition = list(p.getLinkState(
-            self.movoId, self.movoEndEffectorIndex)[0])
+    
 
     def step(self, action):
+        low = np.array([0.3, -0.1, 0.63])
+        high = np.array([0.7, 0.3, 0.8])
         if action is not None:
-            dx = action[0]
-            dy = action[1]
-            dz = action[2]
-
-            self.endEffectorPosition[0] = clamp(
-                self.endEffectorPosition[0] + dx, 0.3, 0.7)
-            self.endEffectorPosition[1] = clamp(
-                self.endEffectorPosition[1] + dy, -0.1, 0.3)
-            self.endEffectorPosition[2] = clamp(
-                self.endEffectorPosition[2] + dz, 0.63, 0.8)
-
-            self._set_end_effector(self.endEffectorPosition[:])
+            pos = np.array(p.getLinkState(
+                self.movoId, self.movoEndEffectorIndex)[0])
+            pos = np.clip(pos + action, low, high)
+            self._set_end_effector(pos)
