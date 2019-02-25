@@ -7,6 +7,21 @@ from stable_baselines import PPO2
 import argparse
 
 n_steps = 0
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--env_name', default='movobot-v0')
+    parser.add_argument('--seed', default=0, type=int)
+    parser.add_argument('--eval_freq', default=5e3, type=int)
+    parser.add_argument('--max_timesteps', default=1e5, type=int)
+    parser.add_argument('--save_file_name', default='movo.pkl', type=str)
+    parser.add_argument('--render', default=1, type=int)
+    parser.add_argument('--eval', default='false', type=str)
+    parser.add_argument('--model_dir', default='models', type=str)
+    parser.add_argument('--discrete', default=1, type=int)
+    args = parser.parse_args()
+    return args
+    
 args = parse_args()
 
 model_file = os.path.join(args.model_dir, args.save_file_name)
@@ -25,19 +40,7 @@ def callback(_locals, _globals):
     
     return True
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--env_name', default='movobot-v0')
-    parser.add_argument('--seed', default=0, type=int)
-    parser.add_argument('--eval_freq', default=5e3, type=int)
-    parser.add_argument('--max_timesteps', default=1e5, type=int)
-    parser.add_argument('--save_file_name', default='movo.pkl', type=str)
-    parser.add_argument('--render', default=1, type=int)
-    parser.add_argument('--eval', default='false', type=str)
-    parser.add_argument('--model_dir', default='models', type=str)
-    parser.add_argument('--discrete', default=1, type=int)
-    args = parser.parse_args()
-    return args
+
 
 
 env = gym.make("movobot-v0")
