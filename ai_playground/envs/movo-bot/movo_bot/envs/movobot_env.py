@@ -88,7 +88,7 @@ class MovobotEnv(gym.Env):
         else:
             self._movo.reset()
         self._p.stepSimulation()
-        self.getExtendedObservation()
+        self._get_observation()
         return self._observation
 
     def _get_camera_matrices(self):
@@ -113,7 +113,7 @@ class MovobotEnv(gym.Env):
         self._envStepCounter += 1
         reward = self._reward()
         done = self._termination()
-        self.getExtendedObservation()
+        self._get_observation()
         return self._observation, reward, done, {}
 
     def _render(self, mode='human', close=False):
@@ -149,7 +149,7 @@ class MovobotEnv(gym.Env):
 
     def _termination(self):
         if (self.terminated or self._envStepCounter > self._max_episode_steps):
-            self.getExtendedObservation()
+            self._get_observation()
             return True
 
         tableContactPoints = self._p.getContactPoints(
@@ -161,16 +161,11 @@ class MovobotEnv(gym.Env):
             return True
         return False
 
-    def getExtendedObservation(self):
-        img_arr = p.getCameraImage(
-            width=self._width, height=self._height, viewMatrix=self._view_mat, projectionMatrix=self._proj_mat)
-        rgb = img_arr[2]
-        np_img_arr = np.reshape(rgb, (self._height, self._width, 4))[:, :, 0:3]
-        np_img_arr = np.reshape(np_img_arr, (self._height*self._width*3,))
-        self._observation = np_img_arr
-
-    if parse_version(gym.__version__) >= parse_version('0.9.6'):
-        render = _render
-        reset = _reset
-        seed = _seed
-        step = _step
+    def _get_observation(self):
+        image_blob = p.getCameraImage(
+            width=self._width,
+            height=self._height,
+            viewMatrix=self._view_mat,
+            projectionMatrix=self._proj_mat)[2]
+        image_rgb = np.reshape(image_blob, (self._height, self._width, 4))[:, :, :3]
+        self._observation = image_rgb.astype(np.uint8)

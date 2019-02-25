@@ -4,6 +4,7 @@ import gym
 import argparse
 import os
 import math
+from timeit import default_timer as timer
 
 import torch
 import torch.nn as nn
@@ -13,7 +14,7 @@ import movo_bot
 import data
 import logger
 import utils
-from td3 import TD3
+from td3 import TD3, StateTransformer
 
 
 def create_policy(policy_name, device, state_dim, action_dim, max_action):
@@ -47,7 +48,7 @@ def parse_args():
     parser.add_argument('--policy_name', default='TD3')  # Policy name
     parser.add_argument('--env_name', default='movobot-v0')
     parser.add_argument('--seed', default=0, type=int)
-    parser.add_argument('--start_timesteps', default=100, type=int)
+    parser.add_argument('--start_timesteps', default=10000, type=int)
     parser.add_argument('--eval_freq', default=5e3, type=int)
     parser.add_argument('--max_timesteps', default=1e6, type=int)
     parser.add_argument('--expl_noise', default=0.1, type=float)
@@ -100,6 +101,8 @@ def main():
     tracker = logger.StatsTracker()
     train_logger = logger.TrainLogger(args.log_format)
     eval_logger = logger.EvalLogger(args.log_format)
+    
+    state_transformer = StateTransformer()
 
     total_timesteps = 0
     timesteps_since_eval = 0
@@ -107,7 +110,7 @@ def main():
     episode_reward = 0
     episode_timesteps = 0
     done = False
-    state = env.reset()
+    state = state_transformer.transform(env.reset())
 
     
     if args.eval == 'true':
@@ -119,10 +122,12 @@ def main():
                 if total_timesteps != 0:
                     train_logger.dump(tracker)
                     if args.policy_name == 'TD3':
+                        start = timer()
                         train_policy.run(replay_buffer, episode_timesteps, tracker,
                                         args.batch_size, args.discount, args.tau,
                                         args.policy_noise, args.noise_clip,
                                         args.policy_freq)
+                        print('run: %.3fs' % (timer() - start))
                     # else:
                     #     train_policy.train(replay_buffer, episode_timesteps,
                     #                        args.batch_size, args.discount, args.tau)
@@ -140,7 +145,7 @@ def main():
                 tracker.update('train_episode_reward', episode_reward)
                 tracker.update('train_episode_timesteps', episode_timesteps)
                 # Reset environment
-                state = env.reset()
+                state = state_transformer.transform(env.reset())
                 done = False
                 episode_reward = 0
                 episode_timesteps = 0
@@ -162,7 +167,10 @@ def main():
                             env.action_space.low, env.action_space.high)
 
             # Perform action
+            start = timer()
             new_state, reward, done, _ = env.step(action)
+            print('step: %.3fs' % (timer() - start))
+            new_state = state_transformer.transform(new_state)
             done_float = 0 if episode_timesteps + \
                 1 == env._max_episode_steps else float(done)
             episode_reward += reward
