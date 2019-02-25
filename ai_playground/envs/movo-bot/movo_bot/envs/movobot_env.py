@@ -21,10 +21,10 @@ class MovobotEnv(gym.Env):
         'video.frames_per_second': 50
     }
 
-    def __init__(self, render=True, isDiscrete=False):
+    def __init__(self):
         pass
 
-    def init(self, render=True, isDiscrete=False):
+    def init(self, render=True, isDiscrete=True):
         self._timeStep = 1./240.
         self._observation = []
         self._renders = render
@@ -87,7 +87,7 @@ class MovobotEnv(gym.Env):
             self._movo = movo.Movo()
         else:
             self._movo.reset()
-        self._p.stepSimulation() 
+        self._p.stepSimulation()
         self.getExtendedObservation()
         return self._observation
 
@@ -120,24 +120,25 @@ class MovobotEnv(gym.Env):
         pass
 
     def _reward(self):
-        # blockPos = np.array(
-        #     self._p.getBasePositionAndOrientation(self.blockUid)[0])
-        # reachPosition = np.array(self._p.getLinkState(
-        #     self._movo.movoId, self._movo.movoEndEffectorIndex)[0])
+        if not self._isDiscrete:
+            blockPos = np.array(
+                self._p.getBasePositionAndOrientation(self.blockUid)[0])
+            reachPosition = np.array(self._p.getLinkState(
+                self._movo.movoId, self._movo.movoEndEffectorIndex)[0])
 
-        # reward = -100.0 * np.linalg.norm(blockPos-reachPosition)
-
-        tableContactPoints = self._p.getContactPoints(
-            self.tableId, self._movo.movoId)
-        blockContactPoints = self._p.getContactPoints(
-            self.blockUid, self._movo.movoId)
-
-        if (len(tableContactPoints)):
-            reward = -1.0
-        elif (len(blockContactPoints)):
-            reward = 1.0
+            reward = -100.0 * np.linalg.norm(blockPos-reachPosition)
         else:
-            reward = 0.0
+            tableContactPoints = self._p.getContactPoints(
+                self.tableId, self._movo.movoId)
+            blockContactPoints = self._p.getContactPoints(
+                self.blockUid, self._movo.movoId)
+
+            if (len(tableContactPoints)):
+                reward = -1.0
+            elif (len(blockContactPoints)):
+                reward = 1.0
+            else:
+                reward = 0.0
 
         return reward
 

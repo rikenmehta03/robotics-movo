@@ -27,7 +27,7 @@ render = True
 if len(sys.argv) > 1:
     render = bool(int(sys.argv[1]))
 
-env.init(render=render)
+env.init(render=render, isDiscrete=False)
 env = DummyVecEnv([lambda: env])
 
 model = PPO2(MlpPolicy, env, verbose=1, n_steps=128)
@@ -35,3 +35,13 @@ model.learn(total_timesteps=100000, callback=callback)
 
 model.save("movo.pkl")
 
+# model = PPO2.load("movo.pkl")
+
+# obs = env.reset()
+# done = False
+# sum_reward = 0.0
+# for i in range(10):
+#     while not done:
+#         action, _states = model.predict(obs)
+#         obs, rewards, dones, info = env.step(action)
+#         sum_reward += rewards
