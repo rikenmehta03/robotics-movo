@@ -30,7 +30,7 @@ if len(sys.argv) > 1:
 env.init(render=render)
 env = DummyVecEnv([lambda: env])
 
-model = PPO2(MlpPolicy, env, verbose=1)
+model = PPO2(MlpPolicy, env, verbose=1, n_steps=128)
 model.learn(total_timesteps=100000, callback=callback)
 
 model.save("movo.pkl")
