@@ -139,7 +139,7 @@ class TD3(object):
             '%s/critic.pt' % directory, map_location=map_location))
 
     def select_action(self, state):
-        state = torch.FloatTensor(state.reshape(1, -1)).to(self.device)
+        state = torch.FloatTensor(state).unsqueeze(0).to(self.device)
         return self.actor(state).cpu().data.numpy().flatten()
 
     def run(self, replay_buffer, num_iterations, tracker,

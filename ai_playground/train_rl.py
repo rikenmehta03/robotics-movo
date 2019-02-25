@@ -23,11 +23,11 @@ def create_policy(policy_name, device, state_dim, action_dim, max_action):
     assert 'Unknown policy: %s' % policy_name
 
 
-def evaluate_policy(env, policy, tracker, num_episodes=10):
+def evaluate_policy(env, policy, tracker, state_transformer, num_episodes=10):
     tracker.reset('eval_episode_reward')
     tracker.reset('eval_episode_timesteps')
     for _ in range(num_episodes):
-        state = env.reset()
+        state = state_transformer.transform(env.reset())
         done = False
         sum_reward = 0
         timesteps = 0
@@ -36,6 +36,7 @@ def evaluate_policy(env, policy, tracker, num_episodes=10):
                 with utils.eval_mode(policy):
                     action = policy.select_action(np.array(state))
             state, reward, done, _ = env.step(action)
+            state = state_transformer.transform(state)
             sum_reward += reward
             timesteps += 1
 
@@ -122,20 +123,15 @@ def main():
                 if total_timesteps != 0:
                     train_logger.dump(tracker)
                     if args.policy_name == 'TD3':
-                        start = timer()
                         train_policy.run(replay_buffer, episode_timesteps, tracker,
                                         args.batch_size, args.discount, args.tau,
                                         args.policy_noise, args.noise_clip,
                                         args.policy_freq)
-                        print('run: %.3fs' % (timer() - start))
-                    # else:
-                    #     train_policy.train(replay_buffer, episode_timesteps,
-                    #                        args.batch_size, args.discount, args.tau)
 
                 # Evaluate episode
                 if timesteps_since_eval >= args.eval_freq:
                     timesteps_since_eval %= args.eval_freq
-                    evaluate_policy(env, train_policy, tracker)
+                    evaluate_policy(env, train_policy, tracker, state_transformer)
                     eval_logger.dump(tracker)
                     tracker.reset('train_episode_reward')
                     tracker.reset('train_episode_timesteps')
@@ -167,9 +163,7 @@ def main():
                             env.action_space.low, env.action_space.high)
 
             # Perform action
-            start = timer()
             new_state, reward, done, _ = env.step(action)
-            print('step: %.3fs' % (timer() - start))
             new_state = state_transformer.transform(new_state)
             done_float = 0 if episode_timesteps + \
                 1 == env._max_episode_steps else float(done)

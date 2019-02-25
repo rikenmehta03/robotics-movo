@@ -2,6 +2,7 @@ import os
 import math
 import numpy as np
 import random
+from timeit import default_timer as timer
 
 import gym
 from gym import spaces
