@@ -45,8 +45,8 @@ class MovobotEnv(gym.Env):
 
         self._view_mat, self._proj_mat = self._get_camera_matrices()
 
-        self._width = 341
-        self._height = 256
+        self._width = 64
+        self._height = 64
 
         action_dim = 3
         self._action_bound = 1
@@ -167,6 +167,7 @@ class MovobotEnv(gym.Env):
             width=self._width,
             height=self._height,
             viewMatrix=self._view_mat,
-            projectionMatrix=self._proj_mat)[2]
+            projectionMatrix=self._proj_mat,
+            renderer=p.ER_BULLET_HARDWARE_OPENGL)[2]
         image_rgb = np.reshape(image_blob, (self._height, self._width, 4))[:, :, :3]
         self._observation = image_rgb.astype(np.uint8)
