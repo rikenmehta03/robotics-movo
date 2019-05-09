@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import gym
+from jaco import jaco_reacher
 import argparse
 import os
 import math
@@ -72,10 +73,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    env = gym.make(args.env_name)
-
-    if args.env_name == 'movobot-v0':
-        env.init(render=args.render, discrete_reward=args.discrete_reward)
+    env = jaco_reacher.env
 
     # Set seeds
     env.seed(args.seed)
