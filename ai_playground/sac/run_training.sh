@@ -3,7 +3,7 @@
 CDIR=./runs
 mkdir -p ${CDIR}
 
-for SEED in 1 2 3 4 5 6 7 8 9 10; do
+for SEED in 1 3 5 7 9; do
   SUBDIR=seed_${SEED}
   SAVEDIR=${CDIR}/${SUBDIR}
   mkdir -p ${SAVEDIR}

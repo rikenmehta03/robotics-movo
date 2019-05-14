@@ -54,7 +54,7 @@ class NormalizedActions(gym.ActionWrapper):
 
 def evaluate_policy(env, policy, step, L, num_episodes, video_dir=None):
     for i in range(num_episodes):
-        video = VideoRecorder(env, enabled=video_dir is not None and i == 0, fps=15)
+        video = VideoRecorder(env, enabled=video_dir is not None and i == 0, fps=5)
         obs = env.reset()
         done = False
         total_reward = 0
