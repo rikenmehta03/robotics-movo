@@ -5,7 +5,7 @@ import inspect
 import dm_control2gym
 
 LOCAL_DOMAINS = {name: module for name, module in locals().items()
-            if inspect.ismodule(module) and hasattr(module, 'SUITE')}
+                 if inspect.ismodule(module) and hasattr(module, 'SUITE')}
 
 suite._DOMAINS = {**suite._DOMAINS, **LOCAL_DOMAINS}
 
