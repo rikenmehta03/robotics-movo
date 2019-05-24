@@ -208,8 +208,16 @@ class JacoReacher(base.Task):
 
     def get_reward(self, physics):
         """Returns a sparse or a smooth reward, as specified in the constructor."""
-        reward = -physics.finger_to_target_distance()
-        reward -= physics.action_cost
-        reward -= physics.pose_penalty()
-        reward += physics.target_height()
+        reward = {}
+
+        reward['target_penalty'] = -physics.finger_to_target_distance()
+        reward['raw'] = -physics.finger_to_target_distance()
+        
+        reward['action_cost'] = -physics.action_cost
+        reward['raw'] -= physics.action_cost
+
+        reward['pose_penalty'] = -physics.pose_penalty()
+        reward['raw'] -= physics.pose_penalty()
+        
+        # reward += physics.target_height()
         return reward
