@@ -39,14 +39,14 @@ import ipdb
 
 SUITE = containers.TaggedTasks()
 
-_DEFAULT_TIME_LIMIT = 20
+_DEFAULT_TIME_LIMIT = 2
 _ACTION_COST_D = 0.0025
 
 # default 0.002
 _CONTROL_TIMESTEP = 0.02
 
 # default 1, 500/s
-_N_SUB_STEPS = 100
+_N_SUB_STEPS = 1
 
 _HOME_POSE = [275.35, 167.43, 57.49, 240.86, 82.70, 75.72, 0, 0, 0]
 

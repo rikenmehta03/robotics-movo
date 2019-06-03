@@ -8,7 +8,7 @@ height = 480
 env = jaco_reacher.env
 
 
-obs = env.reset()
+# obs = env.reset()
 
 # env.step(env.action_space.low)
 # screen = env.render(mode='rgb_array')
@@ -17,9 +17,10 @@ obs = env.reset()
 
 done = False
 while not done:
-  for i in range(5000):
+  action = env.reset()[0:9]
+  for i in range(50000):
     # action = env.action_space.sample()
-    action = np.random.uniform(-20, 20, size=[9])
+    # action = np.random.uniform(-20, 20, size=[9])
     new_obs, reward, done, info = env.step(action)
     screen = env.render(mode='rgb_array')
     cv2.imshow('window', cv2.cvtColor(screen, cv2.COLOR_BGR2RGB))
